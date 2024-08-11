@@ -1,0 +1,20 @@
+{
+    "cSpell.words": [
+        "Antd",
+        "autoincrement",
+        "clsx",
+        "cssinjs",
+        "datasource",
+        "hookform",
+        "htmlbody",
+        "nextjs",
+        "nunito",
+        "playfair",
+        "Recaptcha",
+        "Signin",
+        "tailwindcss"
+    ],
+    "files.associations": {
+        "*.css": "tailwindcss"
+    }
+}
