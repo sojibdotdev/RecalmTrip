@@ -65,7 +65,7 @@ const otpTemplate = ({ name, otp }: OtpTemplateParams): string => {
                             <p>If you did not request this OTP, please ignore this email.</p>
                         </div>
                         <div class="footer">
-                            <p>&copy; 2024 foysal.dev. All rights reserved.</p>
+                            <p>&copy; 2024 www.recalmtrip.com. All rights reserved.</p>
                         </div>
                     </div>
                 </body>

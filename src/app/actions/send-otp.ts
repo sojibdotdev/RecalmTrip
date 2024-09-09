@@ -60,7 +60,7 @@ export const sendOTP = async ({
     if (email) {
       await sendEmail({
         from: {
-          email: '"noreply" <noreply@foysal.dev>',
+          email: 'no-reply@recalmtrip.com',
           name: 'noreply'
         },
         to: {
