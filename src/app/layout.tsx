@@ -1,13 +1,13 @@
-import type { Metadata } from 'next'
 import { AntdRegistry } from '@ant-design/nextjs-registry'
-import '../globals.css'
 import 'animate.css'
 import { ConfigProvider } from 'antd'
-import { theme } from '../theme/antd'
+import type { Metadata } from 'next'
 import { SessionProvider } from 'next-auth/react'
 import { auth } from '../auth'
-import { Header, Footer, ReCaptcha } from './components'
-import { primary, secondary } from './fonts'
+import '../globals.css'
+import { theme } from '../theme/antd'
+import { Footer, Header, ReCaptcha } from './components'
+import { centraFont } from './fonts'
 
 export const metadata: Metadata = {
   title: 'Reclamtrip',
@@ -23,9 +23,7 @@ const RootLayout = async ({
   return (
     <SessionProvider session={session}>
       <html lang="en">
-        <body
-          className={`${primary.variable} ${secondary.variable} ${primary.className}`}
-        >
+        <body className={`${centraFont.variable} font-centra`}>
           <AntdRegistry>
             <ConfigProvider theme={theme}>
               <ReCaptcha>
@@ -36,10 +34,10 @@ const RootLayout = async ({
                       style={{
                         height: 'calc(100vh - 80px)'
                       }}
-                      className="overflow-y-auto bg-stone-50"
+                      className="overflow-y-auto "
                     >
                       <main
-                        className="max-w-screen-xl px-3 mx-auto font-primary"
+                        className="max-w-screen-xl px-3 mx-auto "
                         style={{
                           minHeight: 'calc(100vh - 80px)'
                         }}

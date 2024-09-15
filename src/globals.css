@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 * {
-  font-family: var(--font-primary);
+  font-family: var(--font-centra);
 }
 .spinner {
   box-sizing: border-box;
