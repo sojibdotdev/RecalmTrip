@@ -59,7 +59,7 @@ function DropDown() {
             <li
               key={item.id}
               onClick={() => handleSelectItem(item.name)} // Select item and close menu
-              className="hover:bg-primary-50 transition-all ease-linear duration-200 cursor-pointer px-4 py-3 flex items-center justify-between"
+              className="hover:bg-primary-50 transition-all ease-linear duration-200 cursor-pointer px-4 py-3 flex items-center justify-between border-b last:border-none"
             >
               <span>{item.name}</span>
               {selectItem === item.name && <FaCheck />}

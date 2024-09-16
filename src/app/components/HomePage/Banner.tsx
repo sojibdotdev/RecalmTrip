@@ -5,7 +5,7 @@ function Banner() {
     {
       id: 1,
       image:
-        'https://scontent.fdac20-1.fna.fbcdn.net/v/t39.30808-6/458764282_435837009499765_8077136147724346868_n.jpg?_nc_cat=104&ccb=1-7&_nc_sid=cc71e4&_nc_ohc=9ftbeEU5LZsQ7kNvgGPWaHg&_nc_ht=scontent.fdac20-1.fna&oh=00_AYAEug9tdIZg1JAgfxXgmhc9Im9Yjougixik7DMWT0xzIw&oe=66EA0F86'
+        'https://ik.imagekit.io/w13m3d3rhif/web/campaign/chuti-manei-gozayaan/chuti-manei-gozaayn-v2-lg.jpg?tr=f-auto,h-280,pr-true'
     },
     {
       id: 2,
