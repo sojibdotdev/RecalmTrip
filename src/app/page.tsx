@@ -1,7 +1,6 @@
-import Banner from './components/HomePage/Banner'
-import HeroSeaction from './components/HomePage/HeroSection'
+import { Banner, HeroSeaction } from './components/HomePage'
 
-const HomePage = async () => {
+const HomePage = () => {
   return (
     <div>
       <HeroSeaction />

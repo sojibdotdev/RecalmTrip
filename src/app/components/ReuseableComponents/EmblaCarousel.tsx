@@ -15,8 +15,8 @@ Autoplay.globalOptions = { delay: 7000 }
 
 type PropType = {
   children?: React.ReactNode
-  dot?: boolean // Optional prop for showing dots
-  arrow?: boolean // Optional prop for showing arrows
+  dot?: boolean
+  arrow?: boolean
 }
 
 const EmblaCarousel: React.FC<PropType> = ({ children, dot, arrow }) => {
@@ -61,7 +61,6 @@ const EmblaCarousel: React.FC<PropType> = ({ children, dot, arrow }) => {
         </div>
       </div>
 
-      {/* Embla Carousel Arrow Buttons (conditionally rendered) */}
       {arrow && (
         <>
           <div className="flex items-center justify-center absolute top-0 bottom-0 -left-4">
@@ -79,7 +78,6 @@ const EmblaCarousel: React.FC<PropType> = ({ children, dot, arrow }) => {
         </>
       )}
 
-      {/* Embla Carousel Dot Buttons (conditionally rendered) */}
       {dot && (
         <div className="flex flex-wrap justify-center items-center gap-3 absolute bottom-8 left-0 right-0 mx-auto">
           {scrollSnaps.map((_, index) => (
@@ -87,7 +85,7 @@ const EmblaCarousel: React.FC<PropType> = ({ children, dot, arrow }) => {
               key={index}
               onClick={() => onDotButtonClick(index)}
               className={`inline-flex appearance-none touch-manipulation cursor-pointer w-2 h-2 items-center justify-center rounded-full ${
-                index === selectedIndex ? 'bg-primary-600' : 'bg-gray-400'
+                index === selectedIndex ? 'bg-primary-600' : 'bg-white'
               }`}
             />
           ))}
@@ -97,4 +95,4 @@ const EmblaCarousel: React.FC<PropType> = ({ children, dot, arrow }) => {
   )
 }
 
-export default EmblaCarousel
+export { EmblaCarousel }

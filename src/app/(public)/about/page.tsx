@@ -1,11 +1,5 @@
-import FlightSearchBox from '../../components/ReuseableComponents/FillterSearchBox'
-
 const AboutPage = () => {
-  return (
-    <div>
-      <FlightSearchBox />
-    </div>
-  )
+  return <div>About Page</div>
 }
 
 export default AboutPage

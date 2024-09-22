@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { FaLocationDot, FaXmark } from 'react-icons/fa6'
 
-function FillterSearchBox() {
+function FilterSearchBox() {
   const [isSearchBox, setIsSearchBox] = useState<boolean>(true) // State to show/hide search box
   const [inputValue, setInputValue] = useState<string>('') // State to manage input value
   const searchBoxRef = useRef<HTMLDivElement | null>(null) // Reference to the search box container
@@ -92,4 +92,4 @@ function FillterSearchBox() {
   )
 }
 
-export default FillterSearchBox
+export { FilterSearchBox }

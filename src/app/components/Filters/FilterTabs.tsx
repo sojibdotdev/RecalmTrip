@@ -3,47 +3,47 @@ import Flight from '../../../../public/images/Fillter/flight.svg'
 import Hotel from '../../../../public/images/Fillter/Hotel.svg'
 import Tour from '../../../../public/images/Fillter/Tour.svg'
 import Visa from '../../../../public/images/Fillter/Visa.svg'
-import Tab from '../ReuseableComponents/Tab'
+import { Tab } from '../ReuseableComponents'
 
-function FillterTabs() {
+function FilterTabs() {
   const tabItems = [
     {
       id: 1,
-      value: 'Flight',
-      name: 'Flight',
+      key: 'Flight',
+      label: 'Flight',
       icon: Flight.src
     },
     {
       id: 2,
-      value: 'Stays',
-      name: 'Stays',
+      key: 'Stays',
+      label: 'Stays',
       icon: Hotel.src
     },
     {
       id: 3,
-      value: 'Tour',
-      name: 'Tour',
+      key: 'Tour',
+      label: 'Tour',
       icon: Tour.src
     },
     {
       id: 4,
-      value: 'Umrah',
-      name: 'Umrah',
+      key: 'Umrah',
+      label: 'Umrah',
       icon: Umrah.src
     },
     {
       id: 5,
-      value: 'Visa',
-      name: 'Visa',
+      key: 'Visa',
+      label: 'Visa',
       icon: Visa.src
     }
   ]
 
   return (
-    <div className="mb-6">
+    <div>
       <Tab tabItems={tabItems} />
     </div>
   )
 }
 
-export default FillterTabs
+export { FilterTabs }

@@ -3,10 +3,11 @@ import 'animate.css'
 import { ConfigProvider } from 'antd'
 import type { Metadata } from 'next'
 import { SessionProvider } from 'next-auth/react'
+import { Suspense } from 'react'
 import { auth } from '../auth'
 import '../globals.css'
 import { theme } from '../theme/antd'
-import { Footer, Header, ReCaptcha } from './components'
+import { Footer, Header, Loading, ReCaptcha } from './components'
 import { centraFont } from './fonts'
 
 export const metadata: Metadata = {
@@ -24,33 +25,35 @@ const RootLayout = async ({
     <SessionProvider session={session}>
       <html lang="en">
         <body className={`${centraFont.variable} font-centra`}>
-          <AntdRegistry>
-            <ConfigProvider theme={theme}>
-              <ReCaptcha>
-                <div>
+          <Suspense fallback={<Loading />}>
+            <AntdRegistry>
+              <ConfigProvider theme={theme}>
+                <ReCaptcha>
                   <div>
-                    <Header />
-                    <div
-                      style={{
-                        height: 'calc(100vh - 80px)'
-                      }}
-                      className="overflow-y-auto "
-                    >
-                      <main
-                        className="max-w-screen-xl px-3 mx-auto "
+                    <div>
+                      <Header />
+                      <div
                         style={{
-                          minHeight: 'calc(100vh - 80px)'
+                          height: 'calc(100vh - 80px)'
                         }}
+                        className="overflow-y-auto "
                       >
-                        {children}
-                      </main>
-                      <Footer />
+                        <main
+                          className="max-w-screen-xl px-3 mx-auto "
+                          style={{
+                            minHeight: 'calc(100vh - 80px)'
+                          }}
+                        >
+                          {children}
+                        </main>
+                        <Footer />
+                      </div>
                     </div>
                   </div>
-                </div>
-              </ReCaptcha>
-            </ConfigProvider>
-          </AntdRegistry>
+                </ReCaptcha>
+              </ConfigProvider>
+            </AntdRegistry>
+          </Suspense>
         </body>
       </html>
     </SessionProvider>

@@ -5,8 +5,8 @@ import { useEffect, useRef, useState } from 'react'
 
 type TabItem = {
   id: number
-  value: string
-  name: string
+  key: string
+  label: string
   icon?: string | JSX.Element // Icon can be a URL (string) or React component (JSX.Element)
 }
 
@@ -43,7 +43,7 @@ function Tab({ tabItems }: TabProps) {
   }, [])
 
   return (
-    <ul className="flex items-center relative overflow-hidden">
+    <ul className="flex items-center relative overflow-hidden ">
       {/* Bottom animated border */}
       <li
         className="h-[2px] bg-secondary absolute bottom-0 z-10 transition-all ease-linear duration-200"
@@ -69,7 +69,7 @@ function Tab({ tabItems }: TabProps) {
               {typeof item.icon === 'string' ? (
                 <Image
                   src={item.icon}
-                  alt={item.name}
+                  alt={item.label}
                   width={22}
                   height={22}
                   className={`transition-all ${
@@ -81,11 +81,11 @@ function Tab({ tabItems }: TabProps) {
               )}
             </span>
           )}
-          {item.name}
+          {item.label}
         </li>
       ))}
     </ul>
   )
 }
 
-export default Tab
+export { Tab }

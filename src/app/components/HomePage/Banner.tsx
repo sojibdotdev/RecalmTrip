@@ -1,4 +1,4 @@
-import EmblaCarousel from '../ReuseableComponents/EmblaCarousel'
+import { EmblaCarousel } from '../ReuseableComponents'
 
 function Banner() {
   const bannerItems = [
@@ -34,4 +34,4 @@ function Banner() {
   )
 }
 
-export default Banner
+export { Banner }

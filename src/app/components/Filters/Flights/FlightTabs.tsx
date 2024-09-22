@@ -1,10 +1,15 @@
 import { useState } from 'react'
 
-function FlightTabs() {
-  const [selectedTab, setSelectedTab] = useState('roundTrip') // Default selected tab
+interface FlightTabsProps {
+  handleTabChange: (selectedTab: string) => void
+}
+
+function FlightTabs({ handleTabChange }: FlightTabsProps) {
+  const [selectedTab, setSelectedTab] = useState('roundTrip')
 
   const handleTabClick = (tabName: string) => {
-    setSelectedTab(tabName) // Update the selected tab when clicked
+    setSelectedTab(tabName)
+    handleTabChange(tabName)
   }
 
   return (
@@ -87,4 +92,4 @@ function FlightTabs() {
   )
 }
 
-export default FlightTabs
+export { FlightTabs }
