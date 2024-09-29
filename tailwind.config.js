@@ -4,8 +4,7 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        primary: ['var(--font-primary)'],
-        secondary: ['var(--font-secondary)']
+        centra: ['var(--font-centra)']
       },
       colors: {
         primary: {
@@ -19,7 +18,8 @@ module.exports = {
           700: '#00805a',
           800: '#00805a',
           900: '#00805a'
-        }
+        },
+        secondary: '#004AAD'
       }
     }
   },
