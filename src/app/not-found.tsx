@@ -1,27 +1,31 @@
-import Image from 'next/image'
+import { auth } from '@/auth'
+import { Header } from '@/components'
 import Link from 'next/link'
-import { FaArrowLeft } from 'react-icons/fa6'
 
-const NotFound = () => {
+const NotFound = async () => {
+  const session = await auth()
   return (
     <div>
-      <div className="flex flex-col items-center justify-center">
-        <div className="text-5xl text-center mb-2 text-gray-800 font-extrabold">
-          404
+      <Header />
+      <div className="container mx-auto mt-32">
+        <div className="text-6xl flex items-center justify-center">
+          <div className="text-tertiary-500">O</div>
+          <div className="text-secondary-500">o</div>
+          <div className="text-secondary-500">p</div>
+          <div className="text-primary-500">s</div>
         </div>
-        <div className="text-center text-lg text-neutral-500">
-          Opps page not found !
+        <div className="flex items-center flex-col mt-6 text-gray-700 gap-4">
+          <div className="text-base">The page you requested not found. :)</div>
+
+          <Link
+            href={session?.user?.role === 'ADMIN' ? '/admin' : '/'}
+            className="text-secondary-500 border-b border-b-secondary-500"
+          >
+            Go back to home
+          </Link>
         </div>
-        <Link
-          href="/"
-          className="text-neutral-600  mt-8 text-base  flex items-center gap-2 rounded-sm px-4 py-2"
-        >
-          <FaArrowLeft className="text-neutral-900" />
-          Home page
-        </Link>
       </div>
     </div>
   )
 }
-
 export default NotFound

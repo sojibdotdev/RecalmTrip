@@ -1,5 +1,5 @@
-import { auth } from './auth'
-import { routes } from './routes'
+import { auth } from '@/auth'
+import { routes } from '@/routes'
 
 export default auth(async (req) => {
   const { AUTH, ADMIN, USER } = routes

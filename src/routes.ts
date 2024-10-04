@@ -7,8 +7,8 @@ interface Routes {
 }
 
 const routes: Routes = {
-  AUTH: ['/auth/login', '/auth/register', '/auth/error'],
-  USER: ['/privet'],
+  AUTH: ['/auth/login', '/auth/registration', '/auth/error'],
+  USER: ['/account/'],
   ADMIN: ['/admin/*']
 }
 

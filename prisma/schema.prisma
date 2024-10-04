@@ -66,3 +66,41 @@ model Token {
 
   @@unique([email, token])
 }
+
+model Payment_Intent {
+  id              Int      @id @default(autoincrement())
+  paymentIntentId String   @unique
+  amount          Int
+  currency        String
+  status          String
+  customerEmail   String
+  createdAt       DateTime @default(now())
+}
+
+model Transaction {
+  id              String   @id @default(uuid())
+  stripePaymentId String   @unique
+  amount          Int
+  currency        String
+  status          String
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model Template {
+  id          Int        @id @default(autoincrement())
+  title       String
+  description String
+  type        DesignType
+  date        DateTime?
+  price       Float
+  discount    Float      @default(0)
+  assets      Json
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+}
+
+enum DesignType {
+  EventBased
+  Generic
+}

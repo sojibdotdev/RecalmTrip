@@ -1,15 +1,14 @@
-import NextAuth, { Session, User } from 'next-auth'
-import Github from 'next-auth/providers/github'
+import NextAuth, { Session, User, NextAuthConfig } from 'next-auth'
 import GoogleProvider from 'next-auth/providers/google'
 import Credentials from 'next-auth/providers/credentials'
 import { UserRole } from '@prisma/client'
 import { PrismaAdapter } from '@auth/prisma-adapter'
 import { client } from './lib/prismaClient'
-import { LoginSchema, VerifyEmailSchema } from './schemas'
-import { getUserByEmail, getUserById } from './query/user'
+import { LoginSchema, VerifyEmailSchema } from '@/schema'
+import { getUserByEmail, getUserById } from '@/query/user'
 import bcrypt from 'bcryptjs'
 
-export const { handlers, signIn, signOut, auth } = NextAuth({
+const authConfig: NextAuthConfig = {
   pages: {
     signIn: '/auth/login',
     error: '/auth/error'
@@ -66,7 +65,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         if (validatedFields.success) {
           const { email, password } = validatedFields.data
           const user = await getUserByEmail(email)
-
           if (!user || !user.password) return null
           const passwordsMatch = await bcrypt.compare(password, user.password)
           if (passwordsMatch) return user
@@ -80,18 +78,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       async authorize(credentials) {
         const validatedFields = VerifyEmailSchema.safeParse(credentials)
         if (validatedFields.success) {
-          const { email, otp } = validatedFields.data
-          const userOtp = await client.otp.findFirst({
-            where: {
-              email,
-              isValid: true
-            }
-          })
-
-          if (!userOtp || !userOtp.token) return null
-          const isMatched = await bcrypt.compare(otp, userOtp.token)
-          if (isMatched) {
-            const user = getUserByEmail(email)
+          const { email } = validatedFields.data
+          const user = getUserByEmail(email)
+          if (user) {
             return user
           }
           return null
@@ -102,4 +91,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   ],
   adapter: PrismaAdapter(client),
   session: { strategy: 'jwt' }
-})
+}
+
+export const { handlers, signIn, signOut, auth } = NextAuth(authConfig)
