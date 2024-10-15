@@ -32,3 +32,152 @@
     --header-height: 4.5rem;
   }
 }
+
+@keyframes rotateClockwise {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes rotateCounterclockwise {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(-360deg);
+  }
+}
+
+.rotate-clockwise {
+  animation: rotateClockwise 0.5s ease-in-out;
+}
+
+.rotate-counter-clockwise {
+  animation: rotateCounterclockwise 0.5s ease-in-out;
+}
+
+@keyframes planeTakeoff {
+  0% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(8px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+@keyframes planeFly {
+  0% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(8px) rotate(5deg);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+@keyframes cloudMove {
+  0% {
+    transform: translateX(-15px);
+    opacity: 0.5;
+  }
+  50% {
+    transform: translateX(15px);
+    opacity: 0.7;
+  }
+  100% {
+    transform: translateX(-15px);
+    opacity: 0.5;
+  }
+}
+
+.button-cloud {
+  position: absolute;
+  top: 50%;
+  width: 35px;
+  height: 18px;
+  background: #e0e4e8;
+  border-radius: 50%;
+  opacity: 0.5;
+  animation: cloudMove 3s linear infinite;
+}
+
+@keyframes planeFly {
+  0% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(6px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+@keyframes cloudMove {
+  0% {
+    transform: translateX(-5px);
+    opacity: 0.6;
+  }
+  50% {
+    transform: translateX(5px);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateX(-5px);
+    opacity: 0.6;
+  }
+}
+
+.cloud-icon {
+  color: #e0e4e8;
+  position: absolute;
+  font-size: 1.5rem;
+  opacity: 0.5;
+  animation: cloudMove 4s ease-in-out infinite;
+}
+
+.cloud1 {
+  top: 30%;
+  left: 25%;
+  animation-duration: 5s;
+}
+
+.cloud2 {
+  top: 50%;
+  right: 20%;
+  animation-duration: 6s;
+}
+
+.plane-icon {
+  animation: planeFly 2s ease-in-out infinite;
+}
+
+.animate__animated {
+  animation-fill-mode: both;
+}
+.transition-height {
+  transition: height 0.5s ease;
+}
+
+.ant-form-item-label {
+  padding-bottom: 0.25rem !important;
+}
+.ant-form-item-label label {
+  font-size: 12px !important;
+  color: #414141 !important;
+}
+.ant-form-item-explain-error {
+  font-size: 12px !important;
+}
+
+.PhoneInputInput {
+  border: 1px solid #f4f4f4;
+}

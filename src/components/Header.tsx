@@ -1,19 +1,20 @@
 import clsx from 'clsx'
 import Link from 'next/link'
 import { auth } from '@/auth'
-import { BsCart3 } from 'react-icons/bs'
 import { logout } from '@/actions/logout'
 import Image from 'next/image'
-import { Avatar, Badge, Dropdown, Tooltip, MenuProps } from 'antd'
+import { Avatar, Dropdown, MenuProps } from 'antd'
 import { UserOutlined } from '@ant-design/icons'
 import { IoMdLogOut } from 'react-icons/io'
 import { Session } from 'next-auth'
 import { AiOutlineUnorderedList } from 'react-icons/ai'
 
-const userRoutes = [
-  { id: 3, url: '/contact', title: 'Contact' },
-  { id: 4, url: '/about', title: 'About' }
-]
+type UserRoute = {
+  id: number
+  url: string
+  title: string
+}
+const userRoutes: UserRoute[] = []
 
 const Header = async () => {
   const session: Session | null = await auth()
@@ -48,9 +49,6 @@ const Header = async () => {
             <NavigationMenu />
           </div>
           <div className="flex items-center gap-4 md:gap-6 md:ml-16">
-            <Badge className="cursor-pointer" count={10} overflowCount={999}>
-              <BsCart3 className="text-2xl" />
-            </Badge>
             <AuthMenu session={session} />
             <Dropdown
               trigger={['click', 'hover']}

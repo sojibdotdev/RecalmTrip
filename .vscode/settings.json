@@ -2,6 +2,7 @@
     "cSpell.words": [
         "Antd",
         "autoincrement",
+        "BKASH",
         "clsx",
         "cssinjs",
         "datasource",
@@ -17,5 +18,7 @@
     ],
     "files.associations": {
         "*.css": "tailwindcss"
-    }
+    },
+    "window.zoomLevel": 1,
+    "docwriter.style": "Auto-detect"
 }
