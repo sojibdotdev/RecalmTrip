@@ -18,34 +18,52 @@ const registrationAction = async (
       return { success: false, error: 'Invalid fields!' }
     }
 
-    const { email, password, firstName, lastName } = validatedFields.data
-
-    //Check if user already exists
+    const { email, password, firstName, lastName, phone } = validatedFields.data
     const user = await client.user.findFirst({
       where: {
-        email
+        OR: [{ email }, { phone }]
       }
     })
+
     if (user) {
-      return { success: false, error: 'Email already in use!' }
+      if (user.phone) {
+        return { success: false, error: 'Phone number already exists!' }
+      } else {
+        return { success: false, error: 'Email already in use!' }
+      }
     }
 
-    // If user does not exists create a new user
-    await client.user.create({
+    const cratedUser = await client.user.create({
       data: {
         name: `${firstName} ${lastName}`,
         password: await bcrypt.hash(password, 10),
-        email
+        email,
+        phone
       }
     })
-    await signIn('email_password', {
-      email,
-      password,
-      redirect: false
-    })
+    if (cratedUser.phone) {
+      console.log('======>', {
+        phone,
+        password,
+        redirect: false
+      })
+      await signIn('phone_password', {
+        phone,
+        password,
+        redirect: false
+      })
+    } else if (cratedUser.email) {
+      await signIn('email_password', {
+        email,
+        password,
+        redirect: false
+      })
+    }
+
     await sendOTP({
       name: `${values.firstName} ${values.lastName}`,
-      email: values.email
+      email: values.email,
+      phone: values.phone
     })
     return { success: true, message: 'Registered' }
   } catch (error) {

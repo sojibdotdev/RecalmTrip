@@ -15,24 +15,24 @@ export const forgotPassword = async (
       return { success: false, error: 'Invalid fields !' }
     }
 
-    const { email } = validatedFields.data
+    const { email, phone } = validatedFields.data
+    const contactInfo = phone ? { phone } : { email }
     const user = await client.user.findFirst({
-      where: {
-        email
-      }
+      where: contactInfo
     })
-    console.log('====>', email, user)
-
-    const provider = await client.account.findMany({
+    if (!user) {
+      return {
+        success: false,
+        error: 'No user is associated with this email.'
+      }
+    }
+    await client.account.findMany({
       where: {
         userId: user?.id
       }
     })
 
-    if (!user?.name) {
-      return { success: false, error: 'No user is associated with this email.' }
-    }
-    await sendOTP({ email, name: user.name })
+    await sendOTP({ email, phone, name: user?.name || '' })
 
     return { success: true, message: 'OTP sent successfully' }
   } catch (error) {

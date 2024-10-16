@@ -1,6 +1,6 @@
 'use client'
 import Link from 'next/link'
-import { useForm } from 'react-hook-form'
+import { Controller, useForm } from 'react-hook-form'
 import * as z from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import clsx from 'clsx'
@@ -16,19 +16,22 @@ import { AuthResponse } from '@/types/auth'
 import { registrationAction } from './action'
 import { inputFields } from './inputFields'
 import { redirect } from 'next/navigation'
+import { PhoneInput } from '@/components/PhoneNumberInput'
 
 const RegistrationPage = () => {
   const {
     formState: { errors },
     register,
-    handleSubmit
+    handleSubmit,
+    control
   } = useForm<z.infer<typeof RegisterSchema>>({
     resolver: zodResolver(RegisterSchema),
     defaultValues: {
       email: '',
       password: '',
       firstName: '',
-      lastName: ''
+      lastName: '',
+      phone: ''
     }
   })
   const [isPending, startTransition] = useTransition()
@@ -56,6 +59,7 @@ const RegistrationPage = () => {
           if (result.success) {
             const token = await encrypt({
               email: values.email,
+              phone: values.phone,
               name: `${values.firstName} ${values.lastName}`,
               scope: 'REGISTER'
             })
@@ -131,6 +135,34 @@ const RegistrationPage = () => {
               </div>
             )
           })}
+          <div>
+            <Controller
+              name="phone"
+              control={control}
+              rules={{ required: true }}
+              render={({ field }) => {
+                return <PhoneInput {...field} />
+              }}
+            />
+            <CSSTransition
+              in={Boolean(errors['phone']?.message)}
+              timeout={200}
+              classNames={{
+                enter: 'animate__animated',
+                enterActive: 'animate__fadeIn',
+                appear: 'animate__animated',
+                appearActive: 'animate__fadeIn',
+                exit: 'animate__animated',
+                exitActive: 'animate__fadeOut'
+              }}
+              unmountOnExit
+            >
+              <div className="text-red-400 text-xs mt-1 flex items-center gap-1">
+                {errors['phone']?.message && <BiErrorCircle />}
+                {errors['phone']?.message}
+              </div>
+            </CSSTransition>
+          </div>
           <button
             disabled={isPending}
             className="w-full h-11 flex items-center justify-center gap-2 py-2.5 text-neutral-600 text-base font-semibold bg-primary-500 rounded disabled:bg-primary-100 disabled:cursor-not-allowed"

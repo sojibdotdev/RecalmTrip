@@ -1,10 +1,12 @@
 'use server'
 import crypto from 'crypto'
-import { hash } from 'bcryptjs'
 import { client } from '@/lib/prismaClient'
 import { sendEmail } from '@/utils/sendEmail'
 import { emailOTP } from '@/templates/emailOTP'
 import { AuthResponse } from '@/types/auth'
+import { sendMessage } from './sendMessage'
+import { phoneOTP } from '@/templates/phoneOTP'
+import { hash } from 'bcryptjs'
 
 interface GenerateOTPParams {
   name: string
@@ -12,6 +14,12 @@ interface GenerateOTPParams {
   phone?: string
 }
 
+/**
+ * Sends an OTP to the specified email or phone number.
+ *
+ * @param {GenerateOTPParams} params - The parameters for OTP generation and sending.
+ * @returns {Promise<AuthResponse>} The response indicating the success or failure of the operation.
+ */
 export const sendOTP = async ({
   name,
   email,
@@ -20,69 +28,66 @@ export const sendOTP = async ({
   if (!email && !phone) {
     return { success: false, error: 'Either email or phone must be provided' }
   }
-  const token = crypto.randomInt(100_000, 1000_000).toString()
-  console.log('OTP ===>', token)
+
+  const token = crypto.randomInt(100_000, 1_000_000).toString()
+  const contactInfo = phone ? { phone } : { email }
 
   const prevOTP = await client.otp.findMany({
-    where: {
-      email
-    },
-    orderBy: {
-      updatedAt: 'desc'
-    }
+    where: contactInfo,
+    orderBy: { updatedAt: 'desc' }
   })
 
   if (prevOTP.length >= 1) {
-    const t1 = new Date(prevOTP[0].createdAt).getTime()
-    if (new Date().getTime() / 1000 - t1 / 1000 <= 120) {
-      return {
-        success: false,
-        error: 'Already sent !'
-      }
+    const lastSentAt = new Date(prevOTP[0].createdAt).getTime()
+    if (Date.now() - lastSentAt <= 120 * 1000) {
+      return { success: false, error: 'Already sent!' }
     }
   }
 
   try {
-    //Make all the OTP invalid for current user
     await client.otp.updateMany({
-      where: {
-        email: email
-      },
-      data: {
-        isValid: false
-      }
+      where: contactInfo,
+      data: { isValid: false }
     })
+
     await client.otp.create({
       data: {
         token: await hash(token, 10),
         isValid: true,
-        email: email,
-        phone: phone,
-        expiredOn: new Date(new Date().getTime() + 3600 * 1000)
+        ...contactInfo,
+        expiredOn: new Date(Date.now() + 3600 * 1000)
       }
     })
-    if (email) {
+
+    if (phone) {
+      await sendMessage({
+        phone,
+        message: phoneOTP(token)
+      })
+    } else if (email) {
       await sendEmail({
         from: {
-          email: 'no-reply@recalmtrip.com',
+          email: process.env.NO_REPLY_EMAIL!,
           name: 'noreply'
         },
         to: {
-          email: email,
-          name: name
+          email,
+          name
         },
-        subject: 'OTP',
-        htmlbody: emailOTP({ name: name, otp: token })
+        subject: 'Your OTP Code',
+        htmlbody: emailOTP({ name, otp: token })
       })
     }
+
     return {
       success: true,
-      message: 'OTP sent'
+      message: 'OTP sent successfully'
     }
   } catch (error) {
+    console.error('Error sending OTP:', error)
     return {
       success: false,
-      error: 'Something went wrong!'
+      error: 'Something went wrong while sending OTP.'
     }
   }
 }

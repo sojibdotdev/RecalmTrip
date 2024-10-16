@@ -37,6 +37,7 @@ model User {
   id              String    @id @default(cuid())
   name            String?
   email           String?   @unique
+  phone           String?   @unique
   emailVerified   DateTime?
   phoneVerifiedOn DateTime?
   image           String?
@@ -80,13 +81,13 @@ model Otp {
 
 model Token {
   id      String   @id @default(cuid())
-  email   String
+  userId  String
   type    String
   isValid Boolean
   token   String   @unique
   expires DateTime
 
-  @@unique([email, token])
+  @@unique([userId, token])
 }
 
 model Booking {

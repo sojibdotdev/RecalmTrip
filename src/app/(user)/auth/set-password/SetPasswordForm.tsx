@@ -44,7 +44,8 @@ const SetPasswordForm = () => {
 
   const onSubmit = async (values: z.infer<typeof ResetPasswordSchema>) => {
     startTransition(async () => {
-      const isVerified = await verifyReCaptcha('set-password')
+      const isVerified = await verifyReCaptcha('set_pass')
+      console.log(isVerified)
       if (isVerified) {
         if (token) {
           const result = await resetPassword({
@@ -146,7 +147,7 @@ const SetPasswordForm = () => {
         <button
           type="submit"
           disabled={isPending}
-          className="disabled:bg-neutral-400 w-full h-11 flex items-center justify-center gap-2 py-2.5 text-neutral-600 text-base font-semibold bg-primary-500 rounded disabled:bg-primary-100 disabled:cursor-not-allowed"
+          className="w-full h-11 flex items-center justify-center gap-2 py-2.5 text-neutral-600 text-base font-semibold bg-primary-500 rounded disabled:bg-primary-100 disabled:cursor-not-allowed"
         >
           {isPending ? <Spinner /> : 'Update password'}
         </button>

@@ -1,29 +1,41 @@
 'use client'
-import { Controller, useForm } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 import { useState, useTransition } from 'react'
 import { AuthResponse } from '@/types/auth'
 import { Spinner } from '@/components/Spinner'
-import OtpInput from './OTPInput'
-import { verifyEmail } from './actions/verifyEmail'
 import { BiErrorCircle } from 'react-icons/bi'
 import { redirect } from 'next/navigation'
-import { sendOTP } from './actions/sendOTP'
 import { useReCaptcha } from '@/hooks/useRecaptcha'
-import { generateToken } from './actions/generateToken'
-import { decrypt } from '@/utils/encrypt'
+import { verifyOTP } from './actions/verifyOTP'
+import { generateIdToken } from '@/utils/generateIdToken'
+import { sendOTP } from '@/utils/sendOTP'
+import clsx from 'clsx'
+import { CSSTransition } from 'react-transition-group'
 
 interface FormData {
   otp: string
 }
-//TODO: RESET INPUT FIELD AFTER SUBMIT
-const VerifyOTPForm = ({ email, name }: { email: string; name: string }) => {
-  const { handleSubmit, control, reset } = useForm<FormData>({
+
+const VerifyOTPForm = ({
+  phone,
+  email,
+  name
+}: {
+  phone: string
+  email: string
+  name: string
+}) => {
+  const {
+    formState: { errors },
+    handleSubmit,
+    reset,
+    register
+  } = useForm<FormData>({
     defaultValues: {
       otp: ''
     }
   })
   const [isPending, startTransition] = useTransition()
-
   const [result, setResult] = useState<AuthResponse>({
     success: false,
     message: '',
@@ -33,16 +45,17 @@ const VerifyOTPForm = ({ email, name }: { email: string; name: string }) => {
   const { verifyReCaptcha } = useReCaptcha()
 
   const handleResendOTP = async () => {
-    reset()
-    if (email) {
+    if (phone || email) {
       startTransition(async () => {
         const isVerified = await verifyReCaptcha('resendOtp')
+        reset({ otp: '' })
         if (isVerified) {
-          const result = await sendOTP({
+          const resendResult = await sendOTP({
             name,
+            phone,
             email
           })
-          setResult(result)
+          setResult(resendResult)
         }
       })
     }
@@ -50,20 +63,25 @@ const VerifyOTPForm = ({ email, name }: { email: string; name: string }) => {
 
   const onSubmit = async (data: FormData) => {
     startTransition(async () => {
-      if (email) {
-        const result = await verifyEmail({
+      if (phone || email) {
+        const verifyResult = await verifyOTP({
+          phone,
           email,
           otp: data.otp
         })
-        setResult(result)
-        if (result.success) {
-          const token = (await generateToken()) as string
-          console.log(await decrypt(token))
-          redirect(`/auth/set-password?token=${encodeURIComponent(token)}`)
+        setResult(verifyResult)
+        reset({ otp: '' })
+        if (verifyResult.success) {
+          const idToken = await generateIdToken('SET_PASSWORD')
+          if (idToken) {
+            redirect(`/auth/set-password?token=${encodeURIComponent(idToken)}`)
+          }
         }
       }
     })
   }
+
+  console.log(errors)
 
   return (
     <div>
@@ -71,16 +89,43 @@ const VerifyOTPForm = ({ email, name }: { email: string; name: string }) => {
         onSubmit={handleSubmit(onSubmit)}
         className="flex flex-col items-center"
       >
-        <Controller
-          name="otp"
-          control={control}
-          render={({ field }) => (
-            <OtpInput {...field} control={control} name="otp" length={6} />
-          )}
-        />
+        <div className="w-full">
+          <input
+            {...register('otp', {
+              required: 'OTP is required',
+              pattern: {
+                value: /^[0-9]{6}$/,
+                message: 'OTP must be 6 digits'
+              }
+            })}
+            placeholder="Enter 6 digit OTP"
+            type="text"
+            className={clsx(
+              'w-full border border-neutral-400 text-sm p-4 focus:outline-none rounded',
+              errors.otp &&
+                'outline outline-red-200 outline-1 focus:ring-red-300'
+            )}
+          />
+        </div>
+        <CSSTransition
+          in={Boolean(errors.otp?.message)}
+          timeout={200}
+          classNames={{
+            enter: 'animate__animated animate__fadeIn',
+            exit: 'animate__animated animate__fadeOut'
+          }}
+          unmountOnExit
+        >
+          <div className="text-red-400 text-xs justify-start items-center mt-1 flex gap-1 w-full">
+            <BiErrorCircle />
+            {errors.otp?.message}
+          </div>
+        </CSSTransition>
+
         <button
+          type="submit"
           disabled={isPending}
-          className="disabled:bg-neutral-400 mt-4 w-full h-11 flex items-center justify-center gap-2 py-2.5 text-neutral-600 text-base font-semibold bg-primary-500 rounded disabled:bg-primary-100 disabled:cursor-not-allowed"
+          className="disabled:bg-neutral-400 mt-4 w-full h-11 flex items-center justify-center gap-2 py-2.5 text-neutral-600 text-base font-semibold bg-primary-500 rounded disabled:cursor-not-allowed"
         >
           {isPending ? <Spinner /> : 'Submit'}
         </button>
@@ -89,7 +134,7 @@ const VerifyOTPForm = ({ email, name }: { email: string; name: string }) => {
         onClick={handleResendOTP}
         className="text-xs text-neutral-600 my-4"
       >
-        Didn&rsquo;t received an OTP yet ?{' '}
+        Didn’t receive an OTP yet?{' '}
         <span className="text-blue-600">Resend it</span>
       </button>
       {result.error && !isPending && (

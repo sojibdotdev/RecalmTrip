@@ -8,6 +8,14 @@ export const getUserByEmail = async (email: string) => {
     return null
   }
 }
+export const getUserByPhone = async (phone: string) => {
+  try {
+    const user = await client.user.findUnique({ where: { phone } })
+    return user
+  } catch (e) {
+    return null
+  }
+}
 
 export const getUserById = async (id: string) => {
   try {

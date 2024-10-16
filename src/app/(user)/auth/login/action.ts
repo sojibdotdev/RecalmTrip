@@ -14,15 +14,22 @@ export const login = async (
   if (!validatedFields.success) {
     return { success: false, error: 'Invalid fields !' }
   }
-
-  const { email, password } = validatedFields.data
+  const { email, phone, password } = validatedFields.data
 
   try {
-    await signIn('email_password', {
-      email,
-      password,
-      redirect: false
-    })
+    if (phone) {
+      await signIn('phone_password', {
+        phone,
+        password,
+        redirect: false
+      })
+    } else {
+      await signIn('email_password', {
+        email,
+        password,
+        redirect: false
+      })
+    }
 
     return { success: true, message: 'Logged in success fully' }
   } catch (error) {

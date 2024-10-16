@@ -1,11 +1,13 @@
 import NextAuth, { Session, User, NextAuthConfig } from 'next-auth'
 import GoogleProvider from 'next-auth/providers/google'
+import FacebookProvider from 'next-auth/providers/facebook'
+
 import Credentials from 'next-auth/providers/credentials'
 import { UserRole } from '@prisma/client'
 import { PrismaAdapter } from '@auth/prisma-adapter'
 import { client } from './lib/prismaClient'
-import { LoginSchema, VerifyEmailSchema } from '@/schema'
-import { getUserByEmail, getUserById } from '@/query/user'
+import { LoginSchema, VerifyEmailSchema, VerifyOTPSchema } from '@/schema'
+import { getUserByEmail, getUserById, getUserByPhone } from '@/query/user'
 import bcrypt from 'bcryptjs'
 
 const authConfig: NextAuthConfig = {
@@ -42,7 +44,9 @@ const authConfig: NextAuthConfig = {
           token.name = user.name
           token.role = user.role
           token.email = user.email
+          token.phone = user.phone
           token.emailVerified = user.emailVerified
+          token.phoneVerifiedOn = user.phoneVerifiedOn
           if (provider) {
             token.provider = provider.provider
           }
@@ -58,28 +62,57 @@ const authConfig: NextAuthConfig = {
       clientSecret: process.env.AUTH_GOOGLE_SECRET,
       allowDangerousEmailAccountLinking: true
     }),
+    FacebookProvider({
+      clientId: process.env.AUTH_FACEBOOK_ID,
+      clientSecret: process.env.AUTH_FACEBOOK_SECRET,
+      allowDangerousEmailAccountLinking: true
+    }),
     Credentials({
       id: 'email_password',
       async authorize(credentials) {
         const validatedFields = LoginSchema.safeParse(credentials)
         if (validatedFields.success) {
           const { email, password } = validatedFields.data
-          const user = await getUserByEmail(email)
-          if (!user || !user.password) return null
-          const passwordsMatch = await bcrypt.compare(password, user.password)
-          if (passwordsMatch) return user
+          if (email) {
+            const user = await getUserByEmail(email)
+            if (!user || !user.password) return null
+            const passwordsMatch = await bcrypt.compare(password, user.password)
+            if (passwordsMatch) return user
+          }
+
           return null
         }
         return null
       }
     }),
     Credentials({
-      id: 'email_otp',
+      id: 'phone_password',
       async authorize(credentials) {
-        const validatedFields = VerifyEmailSchema.safeParse(credentials)
+        const validatedFields = LoginSchema.safeParse(credentials)
         if (validatedFields.success) {
-          const { email } = validatedFields.data
-          const user = getUserByEmail(email)
+          const { phone, password } = validatedFields.data
+          if (phone) {
+            const user = await getUserByPhone(phone)
+            if (!user || !user.password) return null
+            const passwordsMatch = await bcrypt.compare(password, user.password)
+            if (passwordsMatch) return user
+          }
+          return null
+        }
+        return null
+      }
+    }),
+    Credentials({
+      id: 'verify_otp',
+      async authorize(credentials) {
+        const validatedFields = VerifyOTPSchema.safeParse(credentials)
+        if (validatedFields.success) {
+          const { email, phone } = validatedFields.data
+          const user = phone
+            ? await getUserByPhone(phone)
+            : email
+            ? await getUserByEmail(email)
+            : null
           if (user) {
             return user
           }

@@ -1,11 +1,12 @@
 'use server'
-import jwt, { Secret, TokenExpiredError, JsonWebTokenError } from 'jsonwebtoken'
+import jwt, { TokenExpiredError, JsonWebTokenError } from 'jsonwebtoken'
 import * as z from 'zod'
 import { ResetPasswordSchema } from '@/schema'
 import { auth } from '@/auth'
 import { AuthResponse } from '@/types/auth'
 import { client } from '@/lib/prismaClient'
 import bcrypt from 'bcryptjs'
+import { decrypt } from '@/utils/encrypt'
 
 export const resetPassword = async (
   values: z.infer<typeof ResetPasswordSchema>
@@ -28,23 +29,34 @@ export const resetPassword = async (
   }
 
   try {
-    console.log(jwt.verify(token, SECRET_KEY))
-    if (!session?.user?.id) {
-      return {
-        success: false,
-        error: 'User not found'
+    const decryptedToken = (await decrypt(token)) as { token: string }
+    const decodedToken = await jwt.verify(
+      decryptedToken?.token,
+      process.env.JWT_SECRET_KEY!
+    )
+    if (decodedToken) {
+      if (!session?.user?.id) {
+        return {
+          success: false,
+          error: 'User not found'
+        }
       }
+      const hashedPassword = await bcrypt.hash(password, 10)
+      await client.user.update({
+        where: {
+          id: session.user.id
+        },
+        data: {
+          password: hashedPassword
+        }
+      })
+      await client.token.deleteMany({
+        where: {
+          userId: session.user.id,
+          type: 'SET_PASSWORD'
+        }
+      })
     }
-    const hashedPassword = await bcrypt.hash(password, 10)
-    await client.user.update({
-      where: {
-        id: session.user.id
-      },
-      data: {
-        password: hashedPassword
-      }
-    })
-
     return {
       success: true,
       message: 'Password updated successfully'
