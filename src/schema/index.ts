@@ -48,12 +48,12 @@ export default LoginSchema
 
 export const RegisterSchema = z
   .object({
-    email: z
-      .string()
-      .email({
-        message: 'Email is not valid'
-      })
-      .optional(),
+    firstName: z.string().min(1, {
+      message: 'First name is required'
+    }),
+    lastName: z.string().min(1, {
+      message: 'Last name is required'
+    }),
     phone: z
       .string()
       .refine(
@@ -67,21 +67,32 @@ export const RegisterSchema = z
         }
       )
       .optional(),
-    password: z
+    email: z
       .string()
-      .min(8, 'Password must be at least 8 characters long')
-      .regex(/[0-9]/, 'Password must contain at least one number'),
-
-    firstName: z.string().min(1, {
-      message: 'First name is required'
-    }),
-    lastName: z.string().min(1, {
-      message: 'Last name is required'
+      .optional()
+      .refine(
+        (value) => !value || z.string().email().safeParse(value).success,
+        {
+          message: 'Invalid email'
+        }
+      ),
+    password: z.string().min(1, {
+      message: 'Password is required'
     })
   })
-  .refine((data) => data.email || data.phone, {
-    message: 'Either email or phone number is required',
-    path: ['email', 'phone']
+  .superRefine((data, ctx) => {
+    if (!data.email && !data.phone) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Either email or phone number is required',
+        path: ['email']
+      })
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Either email or phone number is required',
+        path: ['phone']
+      })
+    }
   })
 
 export const VerifyEmailSchema = z.object({
