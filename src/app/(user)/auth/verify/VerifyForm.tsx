@@ -4,7 +4,7 @@ import { useState, useTransition } from 'react'
 import { AuthResponse } from '@/types/auth'
 import { Spinner } from '@/components/Spinner'
 import { BiErrorCircle } from 'react-icons/bi'
-import { redirect } from 'next/navigation'
+import { redirect, useSearchParams } from 'next/navigation'
 import { useReCaptcha } from '@/hooks/useRecaptcha'
 import { verifyOTP } from './actions/verifyOTP'
 import { generateIdToken } from '@/utils/generateIdToken'
@@ -19,12 +19,17 @@ interface FormData {
 const VerifyOTPForm = ({
   phone,
   email,
-  name
+  name,
+  scope
 }: {
   phone: string
   email: string
   name: string
+  scope: 'FORGOT_PASSWORD' | 'REGISTER'
 }) => {
+  const searchParams = useSearchParams()
+  const callbackUrl = searchParams.get('callbackUrl') ?? '/'
+  console.log(callbackUrl)
   const {
     formState: { errors },
     handleSubmit,
@@ -74,7 +79,15 @@ const VerifyOTPForm = ({
         if (verifyResult.success) {
           const idToken = await generateIdToken('SET_PASSWORD')
           if (idToken) {
-            redirect(`/auth/set-password?token=${encodeURIComponent(idToken)}`)
+            if (scope === 'REGISTER') {
+              redirect(callbackUrl)
+            } else {
+              redirect(
+                `/auth/set-password?token=${encodeURIComponent(
+                  idToken
+                )}&callbackUrl=${encodeURIComponent(callbackUrl)}`
+              )
+            }
           }
         }
       }

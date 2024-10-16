@@ -22,7 +22,9 @@ const VerifyPage = async ({
       phone: string
       email: string
       name: string
+      scope: 'FORGOT_PASSWORD' | 'REGISTER'
     }
+    console.log(decoded)
   } catch (error) {
     console.error('Decryption failed:', error)
     return (
@@ -79,6 +81,7 @@ const VerifyPage = async ({
         name={decoded.name || ''}
         phone={decoded.phone}
         email={decoded.email}
+        scope={decoded.scope}
       />
     </div>
   )

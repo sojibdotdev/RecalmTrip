@@ -15,11 +15,15 @@ import { signIn } from 'next-auth/react'
 import clsx from 'clsx'
 import { login } from './action'
 import { useReCaptcha } from '@/hooks/useRecaptcha'
-import { redirect } from 'next/navigation'
+import { redirect, useSearchParams } from 'next/navigation'
 import { FaEnvelope, FaFacebook, FaPhone } from 'react-icons/fa6'
 import { PhoneInput } from '@/components/PhoneNumberInput'
 
 const LoginPage = () => {
+  const searchParams = useSearchParams()
+  const callbackUrl = searchParams.get('callbackUrl') ?? '/'
+  console.log(callbackUrl)
+
   const {
     formState: { errors },
     register,
@@ -34,7 +38,6 @@ const LoginPage = () => {
       phone: ''
     }
   })
-  console.log('ERROR', errors)
   const [isPending, startTransition] = useTransition()
   const [isPasswordVisible, setIsPasswordVisible] = useState(false)
   const [isLoginByPhone, setIsLoginByPhone] = useState(true)
@@ -52,7 +55,7 @@ const LoginPage = () => {
         const result = await login(values)
         setResult(result)
         if (result?.success) {
-          redirect('/')
+          redirect(callbackUrl)
         } else {
           reset()
         }
@@ -198,7 +201,9 @@ const LoginPage = () => {
       {/* Link and Social Login Buttons */}
       <Link
         className="block text-blue-600 w-full mt-2 mb-12 font-semibold text-xs"
-        href="/auth/forgot-password"
+        href={`/auth/forgot-password?callbackUrl=${encodeURIComponent(
+          callbackUrl
+        )}`}
       >
         Forgotten password?
       </Link>
@@ -231,7 +236,12 @@ const LoginPage = () => {
       </div>
       <div className="text-xs mt-3 text-gray-400 font-semibold text-center">
         Don’t have an account?{' '}
-        <Link href="/auth/registration" className="text-primary-500">
+        <Link
+          href={`/auth/registration?callbackUrl=${encodeURIComponent(
+            callbackUrl
+          )}`}
+          className="text-primary-500"
+        >
           Register
         </Link>
       </div>

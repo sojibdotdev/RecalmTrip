@@ -15,10 +15,12 @@ import { Spinner } from '@/components'
 import { AuthResponse } from '@/types/auth'
 import { registrationAction } from './action'
 import { inputFields } from './inputFields'
-import { redirect } from 'next/navigation'
+import { redirect, useSearchParams } from 'next/navigation'
 import { PhoneInput } from '@/components/PhoneNumberInput'
 
 const RegistrationPage = () => {
+  const searchParams = useSearchParams()
+  const callbackUrl = searchParams.get('callbackUrl') ?? '/'
   const {
     formState: { errors },
     register,
@@ -63,7 +65,11 @@ const RegistrationPage = () => {
               name: `${values.firstName} ${values.lastName}`,
               scope: 'REGISTER'
             })
-            redirect(`/auth/verify?token=${encodeURIComponent(token)}`)
+            redirect(
+              `/auth/verify?token=${encodeURIComponent(
+                token
+              )}&callbackUrl=${encodeURIComponent(callbackUrl)}`
+            )
           }
         }
       } else {
@@ -203,7 +209,10 @@ const RegistrationPage = () => {
       </div>
       <div className="text-xs mt-3 text-gray-400 font-semibold text-center">
         Already have an account ?
-        <Link href="/auth/login" className="text-primary-500">
+        <Link
+          href={`/auth/login?callbackUrl=${encodeURIComponent(callbackUrl)}`}
+          className="text-primary-500"
+        >
           &nbsp;Login
         </Link>
       </div>

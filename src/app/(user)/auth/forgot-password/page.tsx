@@ -14,13 +14,16 @@ import { signIn } from 'next-auth/react'
 import clsx from 'clsx'
 import { BsArrowLeftCircle } from 'react-icons/bs'
 import { forgotPassword } from './action'
-import { redirect } from 'next/navigation'
+import { redirect, useSearchParams } from 'next/navigation'
 import { useReCaptcha } from '@/hooks/useRecaptcha'
 import { encrypt } from '@/utils/encrypt'
 import { FaEnvelope, FaFacebook, FaPhone } from 'react-icons/fa6'
 import { PhoneInput } from '@/components/PhoneNumberInput'
+import { IoIosArrowRoundBack, IoIosArrowRoundForward } from 'react-icons/io'
 
 const ForgotPasswordPage = () => {
+  const searchParams = useSearchParams()
+  const callbackUrl = searchParams.get('callbackUrl') ?? '/'
   const {
     formState: { errors },
     register,
@@ -81,7 +84,11 @@ const ForgotPasswordPage = () => {
             phone: values.phone,
             scope: 'FORGOT_PASSWORD'
           })
-          redirect(`/auth/verify?token=${encodeURIComponent(token)}`)
+          redirect(
+            `/auth/verify?token=${encodeURIComponent(
+              token
+            )}&callbackUrl=${encodeURIComponent(callbackUrl)}`
+          )
         }
       } else {
         setResult({
@@ -172,13 +179,7 @@ const ForgotPasswordPage = () => {
           )}
         </div>
       </form>
-      <Link
-        className="text-blue-600 w-full my-12 mb-12 font-semibold text-sm text-center flex items-start gap-1 justify-center"
-        href="/auth/login"
-      >
-        <BsArrowLeftCircle />
-        <span className="translate-y-[-4px]"> Go back to login </span>
-      </Link>
+
       <button
         className="flex items-center justify-center w-full mt-2 mb-12 py-2 px-4 text-neutral-500 text-sm  border-neutral-100 rounded-lg"
         onClick={() => {
@@ -193,6 +194,13 @@ const ForgotPasswordPage = () => {
         )}
         {isLoginByPhone ? 'Login with email' : 'Login with phone number'}
       </button>
+      <Link
+        href={`/auth/login?callbackUrl=${encodeURIComponent(callbackUrl)}`}
+        className="text-blue-500 text-center flex items-center justify-center gap-1 underline mt-5 w-full"
+      >
+        <IoIosArrowRoundBack className="text-2xl" />
+        Back to &nbsp;Login
+      </Link>
       <div className="flex items-center gap-4 text-gray-300 my-4 text-sm">
         <div className="w-full border border-gray-100"></div>
         <span className="text-red-500 text-xs">or</span>

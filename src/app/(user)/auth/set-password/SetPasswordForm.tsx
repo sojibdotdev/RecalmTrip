@@ -10,7 +10,7 @@ import { ResetPasswordSchema } from '@/schema'
 import { AuthResponse } from '@/types/auth'
 import { Spinner } from '@/components'
 import clsx from 'clsx'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { redirect, useSearchParams } from 'next/navigation'
 import { resetPassword } from './action'
 import { useReCaptcha } from '@/hooks/useRecaptcha'
 
@@ -37,8 +37,11 @@ const SetPasswordForm = () => {
     message: '',
     error: ''
   })
-  const router = useRouter()
+
   const search = useSearchParams()
+  const callbackUrl = search.get('callbackUrl') ?? '/'
+  console.log(callbackUrl)
+
   const { verifyReCaptcha } = useReCaptcha()
   const token = search.get('token')
 
@@ -55,7 +58,7 @@ const SetPasswordForm = () => {
           })
           setResult(result)
           if (result?.success) {
-            router.push('/')
+            redirect(callbackUrl)
           } else {
             reset()
           }
