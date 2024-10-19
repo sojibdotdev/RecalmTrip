@@ -12,7 +12,6 @@ const registrationAction = async (
   values: z.infer<typeof RegisterSchema>
 ): Promise<AuthResponse> => {
   try {
-    //Sever side input field validation
     const validatedFields = RegisterSchema.safeParse(values)
     if (!validatedFields.success) {
       return { success: false, error: 'Invalid fields!' }
@@ -37,16 +36,11 @@ const registrationAction = async (
       data: {
         name: `${firstName} ${lastName}`,
         password: await bcrypt.hash(password, 10),
-        email,
-        phone
+        ...(email && { email }),
+        ...(phone && { phone })
       }
     })
     if (cratedUser.phone) {
-      console.log('======>', {
-        phone,
-        password,
-        redirect: false
-      })
       await signIn('phone_password', {
         phone,
         password,
